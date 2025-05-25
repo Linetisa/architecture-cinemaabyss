@@ -28,6 +28,8 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
+    http.HandleFunc("/api/proxy/health", handleHealth)
+
 	http.HandleFunc("/api/movies", func(w http.ResponseWriter, r *http.Request) {
 		n := rand.Intn(100)
 		if n < migrationPercent {
@@ -65,4 +67,9 @@ func createReverseProxy(target string) *httputil.ReverseProxy {
 		req.Host = url.Host
 	}
 	return proxy
+}
+
+func handleHealth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]bool{"status": true})
 }
